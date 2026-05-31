@@ -1,4 +1,8 @@
 import type {
+  AgentEval,
+  AgentEvalResult,
+  AgentRun,
+  AgentStep,
   Approval,
   AuditEvent,
   Benchmark,
@@ -299,4 +303,60 @@ export function getRagEval(evalId: string): Promise<RagEval> {
 
 export function getRagEvalResults(evalId: string): Promise<RagEvalResult[]> {
   return request<RagEvalResult[]>(`/rag/evaluations/${evalId}/results`);
+}
+
+// ---------------------------------------------------------------------------
+// Phase 9 — Agent & Tool Evaluation
+// ---------------------------------------------------------------------------
+
+export function submitAgentRun(body: {
+  agent_name: string;
+  query: string;
+  final_answer?: string;
+  tool_calls?: Array<Record<string, unknown>>;
+  status?: string;
+  steps?: Array<Record<string, unknown>>;
+}): Promise<AgentRun> {
+  return request<AgentRun>("/agent/runs", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function listAgentRuns(agentName?: string): Promise<AgentRun[]> {
+  const qs = agentName ? `?agent_name=${encodeURIComponent(agentName)}` : "";
+  return request<AgentRun[]>(`/agent/runs${qs}`);
+}
+
+export function getAgentRun(runId: string): Promise<AgentRun> {
+  return request<AgentRun>(`/agent/runs/${runId}`);
+}
+
+export function getAgentRunSteps(runId: string): Promise<AgentStep[]> {
+  return request<AgentStep[]>(`/agent/runs/${runId}/steps`);
+}
+
+export function runAgentEval(body: {
+  dataset_key: string;
+  agent_name: string;
+}): Promise<AgentEval> {
+  return request<AgentEval>("/agent/evaluations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function listAgentEvals(agentName?: string): Promise<AgentEval[]> {
+  const qs = agentName ? `?agent_name=${encodeURIComponent(agentName)}` : "";
+  return request<AgentEval[]>(`/agent/evaluations${qs}`);
+}
+
+export function getAgentEval(evalId: string): Promise<AgentEval> {
+  return request<AgentEval>(`/agent/evaluations/${evalId}`);
+}
+
+export function getAgentEvalResults(evalId: string): Promise<AgentEvalResult[]> {
+  return request<AgentEvalResult[]>(`/agent/evaluations/${evalId}/results`);
 }

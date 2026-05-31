@@ -303,3 +303,58 @@ export interface RagEvalResult {
   answer_relevance_score: number;
   created_at: string;
 }
+
+// ---------------------------------------------------------------------------
+// Phase 9 — Agent & Tool Evaluation
+// ---------------------------------------------------------------------------
+
+export interface AgentStep {
+  id: string;
+  agent_run_id: string;
+  step_index: number;
+  step_type: string;
+  tool_name: string;
+  tool_input: Record<string, unknown>;
+  tool_output: string;
+  reasoning_text: string;
+  created_at: string;
+}
+
+export interface AgentRun {
+  id: string;
+  agent_name: string;
+  query: string;
+  final_answer: string;
+  tool_calls: Array<Record<string, unknown>>;
+  step_count: number;
+  status: string;
+  created_at: string;
+  created_by: string;
+}
+
+export interface AgentEval {
+  id: string;
+  dataset_key: string;
+  agent_name: string;
+  query_count: number;
+  mean_tool_accuracy: number;
+  mean_trajectory_score: number;
+  mean_task_completion: number;
+  status: string;
+  created_at: string;
+  created_by: string;
+}
+
+export interface AgentEvalResult {
+  id: string;
+  agent_eval_id: string;
+  query_text: string;
+  expected_answer: string;
+  actual_answer: string;
+  expected_tools: string[];
+  actual_tools: string[];
+  tool_call_accuracy: number;
+  trajectory_score: number;
+  task_completion_score: number;
+  created_at: string;
+}

@@ -4,6 +4,10 @@ Importing this package registers all models on ``Base.metadata`` so Alembic auto
 ``create_all`` see them. Add new entity modules to the imports below as their phases land.
 """
 
+from app.models.agent_eval import AgentEval
+from app.models.agent_eval_result import AgentEvalResult
+from app.models.agent_run import AgentRun
+from app.models.agent_step import AgentStep
 from app.models.approval import Approval
 from app.models.audit_event import AuditEvent
 from app.models.base import Base
@@ -25,6 +29,10 @@ from app.models.release_gate import ReleaseGate
 from app.models.run import InferenceRun
 
 __all__ = [
+    "AgentEval",
+    "AgentEvalResult",
+    "AgentRun",
+    "AgentStep",
     "Approval",
     "AuditEvent",
     "Base",

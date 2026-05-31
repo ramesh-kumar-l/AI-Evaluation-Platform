@@ -182,5 +182,29 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 | `src/app/Layout.tsx` + `App.tsx` — RAG Eval nav + /rag route | 🟡 | |
 | Exit criteria: corpus created, docs ingested, retrieval tested, RAG eval scored | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
 
-## Phases 9–11 ⬜ Not started
-See [progress.md](./progress.md). STOP for review before starting Phase 9.
+## Phase 9 — Agent & Tool Evaluation ✅ (backend) / 🟡 (frontend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `app/models/agent_run.py` — `AgentRun` immutable trajectory record | ✅ | agent_name, query, final_answer, tool_calls (JSON), step_count, status |
+| `app/models/agent_step.py` — `AgentStep` immutable step record | ✅ | step_index, step_type (thinking/tool_call/response), tool_name, tool_input, tool_output, reasoning_text |
+| `app/models/agent_eval.py` — `AgentEval` immutable eval record | ✅ | dataset_key, agent_name, query_count, 3 aggregate scores, status |
+| `app/models/agent_eval_result.py` — `AgentEvalResult` per-query result | ✅ | agent_eval_id, query_text, expected/actual answer, expected/actual tools, 3 scores |
+| `app/schemas/agent.py` — all agent schemas | ✅ | AgentStepCreate/Out, AgentRunCreate/Out, AgentEvalCreate/Out, AgentEvalResultOut |
+| `app/services/metrics/tool_call_accuracy.py` — F1 over tool-name sets | ✅ | confidence "medium"; order-independent |
+| `app/services/metrics/trajectory_score.py` — Dice-LCS over ordered tool sequences | ✅ | confidence "low"; captures ordering |
+| `app/services/metrics/task_completion.py` — TF-cosine(expected, actual answer) | ✅ | confidence "medium"; reuses _utils.py |
+| `app/services/agent_run_service.py` — create_run, get_run, list_runs, list_steps | ✅ | inline step creation; audit event on create |
+| `app/services/agent_eval_service.py` — run_agent_eval orchestrator | ✅ | matches runs by agent_name+query; expected.tools dict format; 3 scorers |
+| `app/api/agent.py` — all agent endpoints | ✅ | POST/GET /agent/runs, GET /runs/{id}, GET /runs/{id}/steps, POST/GET /agent/evaluations, GET /evaluations/{id}, GET /evaluations/{id}/results |
+| Migration `g1b2c3d4e5f6` (agent_runs + agent_steps + agent_evals + agent_eval_results) | ✅ | alembic check clean; 5 indexes |
+| `app/models/__init__.py` + `app/main.py` wired | ✅ | |
+| Tests (metric scorers ×10, run CRUD ×5, agent eval ×6) | ✅ | **117/117 passed** · ruff ✅ · mypy --strict ✅ (100 files) · alembic clean ✅ |
+| `src/types/index.ts` — AgentStep, AgentRun, AgentEval, AgentEvalResult types | 🟡 | |
+| `src/lib/api.ts` — submitAgentRun, listAgentRuns, getAgentRun, getAgentRunSteps, runAgentEval, listAgentEvals, getAgentEval, getAgentEvalResults | 🟡 | |
+| `src/pages/AgentRunPanels.tsx` — RunCreateForm, RunStepsPanel | 🟡 | <300 lines |
+| `src/pages/AgentPage.tsx` — EvalPanel, AgentDetail, AgentPage (2-col layout) | 🟡 | <300 lines; /agent route |
+| `src/app/Layout.tsx` + `App.tsx` — Agent Eval nav + /agent route | 🟡 | |
+| Exit criteria: run submitted, steps recorded, eval scored with 3 metrics | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
+
+## Phases 10–11 ⬜ Not started
+See [progress.md](./progress.md). STOP for review before starting Phase 10.

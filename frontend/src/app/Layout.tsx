@@ -7,6 +7,7 @@ const NAV_ITEMS: Array<{ to: string; label: string; end?: boolean }> = [
   { to: "/gates", label: "Release Gates" },
   { to: "/benchmarks", label: "Benchmarks" },
   { to: "/rag", label: "RAG Eval" },
+  { to: "/agent", label: "Agent Eval" },
   { to: "/datasets", label: "Datasets" },
   { to: "/audit", label: "Audit Trail" },
 ];
