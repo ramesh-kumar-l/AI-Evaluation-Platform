@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AEP design tokens (Phase 0). Trust-first palette: calm, legible, evidence-forward. */
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 222 47% 31%;
+    --primary-foreground: 210 40% 98%;
+    --muted: 210 16% 93%;
+    --muted-foreground: 215 16% 40%;
+    --border: 214 20% 88%;
+    --radius: 0.5rem;
+
+    /* Semantic trust signals */
+    --trust: 152 55% 38%;   /* verified / passing */
+    --warning: 38 92% 50%;  /* caution / low confidence */
+    --danger: 0 72% 51%;    /* regression / gate blocked */
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --primary: 210 40% 90%;
+    --primary-foreground: 222 47% 11%;
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --border: 217 33% 20%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}

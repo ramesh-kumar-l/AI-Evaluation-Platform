@@ -1,0 +1,46 @@
+# Offline-first local stack: Postgres+pgvector, backend API, frontend shell.
+# `docker compose -f infra/docker-compose.yml up` brings the platform up with no cloud dependency.
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: aep
+      POSTGRES_PASSWORD: aep
+      POSTGRES_DB: aep
+    ports:
+      - "5432:5432"
+    volumes:
+      - aep_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aep -d aep"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ../backend
+    environment:
+      AEP_ENV: local
+      AEP_DATABASE_URL: postgresql+psycopg://aep:aep@db:5432/aep
+      AEP_LOG_JSON: "true"
+      AEP_OLLAMA_BASE_URL: http://host.docker.internal:11434
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ../frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  aep_pgdata:
