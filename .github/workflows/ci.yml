@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
       - name: Install dependencies
-        run: uv pip install --system -e ".[dev,otel]"
+        run: uv pip install -e ".[dev,otel]"
       - name: Lint (ruff)
         run: ruff check .
       - name: Format check (ruff)
