@@ -9,7 +9,7 @@ breakdowns are produced when each phase is individually approved.
 |-------|-----------|---------------|--------|
 | **P0** Foundations & Memory Bank | Source of truth + minimal runnable scaffold | Empty app boots offline; CI green; memory bank populated | ✅ Complete |
 | **P1** Core Domain Model & Versioning | Immutable, versioned, auditable entities | Versioned dataset/prompt/model with lineage + audit via API | ✅ Complete |
-| **P2** Provider Abstraction & Offline Execution | Run a model deterministically, offline | Offline single-inference round-trip persisted & reproducible | ⬜ Not started |
+| **P2** Provider Abstraction & Offline Execution | Run a model deterministically, offline | Offline single-inference round-trip persisted & reproducible | ✅ Complete |
 | **P3** Evaluation Engine + Metrics | Runs → scored, trust-annotated evaluations | Dataset-level eval yields reproducible scored results | ⬜ Not started |
 | **P4** Trust-First Result UI | Results visible, verifiable, auditable | Every mandated trust field shown for a real evaluation | ⬜ Not started |
 | **P5** Comparison & Regression Detection | "Did it improve / regress?" | Regression detected, shown with evidence, recorded | ⬜ Not started |

@@ -9,5 +9,6 @@ from app.models.base import Base
 from app.models.dataset import Dataset
 from app.models.prompt import Prompt
 from app.models.provider import Model, Provider
+from app.models.run import InferenceRun
 
-__all__ = ["AuditEvent", "Base", "Dataset", "Model", "Prompt", "Provider"]
+__all__ = ["AuditEvent", "Base", "Dataset", "InferenceRun", "Model", "Prompt", "Provider"]

@@ -38,5 +38,19 @@ _Last updated: 2026-05-31_
 ⬜ Benchmark (P7) · ⬜ Metric (P3) · ⬜ Evaluation/Run/Result (P2–P3) · ⬜ Approval/ReleaseGate (P6).
 All will reuse `VersionedBase` + the audit service — no retrofit needed.
 
-## Phases 2–11 ⬜ Not started
-See [progress.md](./progress.md). **STOP for review before starting Phase 2.**
+## Phase 2 — Provider Abstraction & Offline Execution ✅ (backend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `ProviderAdapter` Protocol + `InferenceRequest`/`InferenceResponse` dataclasses | ✅ | `app/services/providers/base.py` |
+| `OllamaAdapter` (HTTP, offline-first, `/api/generate`) | ✅ | `app/services/providers/ollama.py` |
+| Adapter registry (`get_adapter(kind, base_url)`) | ✅ | `app/services/providers/registry.py` |
+| `InferenceRun` model (immutable event, not versioned) | ✅ | `app/models/run.py` |
+| `run_service.execute_run` (render prompt, call adapter, persist + audit) | ✅ | provider failures → status="failed", not 5xx |
+| Run schemas (`RunCreate`, `RunOut`) | ✅ | `app/schemas/run.py` |
+| Runs API (`POST /runs`, `GET /runs`, `GET /runs/{id}`) | ✅ | `app/api/runs.py` |
+| Migration `b3556b7705c3` (`inference_runs` table + 3 indexes) | ✅ | `alembic check` clean |
+| Audit bugfix: UUID→str in JSON payload | ✅ | `audit.record_event` normalises via json round-trip |
+| Tests (success, offline-fail, missing-var 422, not-found 404, list/filter, audit event) | ✅ | 18/18 passed |
+
+## Phases 3–11 ⬜ Not started
+See [progress.md](./progress.md). **STOP for review before starting Phase 3.**

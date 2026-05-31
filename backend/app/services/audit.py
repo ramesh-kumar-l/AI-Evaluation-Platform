@@ -54,13 +54,15 @@ def record_event(
         "entity_version_id": str(entity_version_id) if entity_version_id else None,
         "payload": payload,
     }
+    # Round-trip through JSON so non-serializable values (UUID, datetime, …) become strings.
+    safe_payload: dict[str, Any] = json.loads(json.dumps(payload, default=str))
     event = AuditEvent(
         actor=actor,
         action=action,
         entity_type=entity_type,
         entity_key=entity_key,
         entity_version_id=entity_version_id,
-        payload=payload,
+        payload=safe_payload,
         prev_hash=prev_hash,
         hash=_hash(prev_hash, content),
     )
