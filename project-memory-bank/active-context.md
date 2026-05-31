@@ -6,19 +6,23 @@ _Last updated: 2026-05-31_
 - **Phase 0 — Foundations & Memory Bank: COMPLETE & verified.**
 - **Phase 1 — Core Domain Model & Versioning: COMPLETE & verified (backend).**
 - **Phase 2 — Provider Abstraction & Offline Execution: COMPLETE & verified (backend).**
-- Next up: **Phase 3 — Evaluation Engine + Metrics** (STOP for review first, per protocol).
+- **Phase 3 — Evaluation Engine + Metrics: COMPLETE & verified (backend).**
+- Next up: **Phase 4 — Trust-First Result UI** (STOP for review first, per protocol).
 
 ## What works right now
 - Backend boots fully offline (SQLite fallback, no infra) — `uvicorn app.main:app`.
-- Endpoints: `/health`, `/ready`, versioned CRUD-read for **providers, models, prompts, datasets**,
-  `/audit/events`, `/audit/verify`, and **`POST/GET /runs`** (inference execution).
+- Endpoints: `/health`, `/ready`, versioned CRUD for **providers, models, prompts, datasets**,
+  `/audit/events`, `/audit/verify`, `POST/GET /runs` (inference), `POST/GET /metrics` (versioned
+  metric definitions), `POST/GET /evaluations` + `/{id}/results` (dataset-level evaluation).
 - Immutable versioning + hash-chained `AuditEvent` on every mutation.
-- **Ollama adapter**: `POST /runs` renders the prompt template, calls Ollama `/api/generate`
-  (stream=false), persists `InferenceRun` with full provenance (exact version IDs for prompt/model/
-  provider, rendered prompt, raw output, latency, trace). Provider failures → `status="failed"` run
-  persisted for audit; missing template variables → 422.
-- Migrations: `a40763e31c9b` (5 entity tables) + `b3556b7705c3` (`inference_runs`).
-- Quality gates green: **ruff, ruff format, mypy --strict, pytest (18 passed), alembic check clean**.
+- **Evaluation engine**: `POST /evaluations` creates and executes a dataset-level evaluation
+  in-process (no Temporal). Per item: renders prompt → calls Ollama → scores with each metric →
+  stores `EvaluationResult`. Aggregate stats (mean_score, confidence_distribution) in `Evaluation`
+  row. Provider failures → `status="partial/failed"`, still persisted.
+- **Metric scorers**: `exact_match` (confidence "high"), `contains` (confidence "medium"),
+  `semantic_similarity` TF-cosine pure Python (confidence "low", no ML deps).
+- Migrations: `a40763e31c9b` + `b3556b7705c3` + `a8a557afd538`.
+- Quality gates green: **ruff, ruff format, mypy --strict, pytest (33 passed), alembic check clean**.
 
 ## How to run / verify (from `backend/`)
 ```
@@ -31,14 +35,13 @@ uv pip install -e ".[dev]"
 
 ## Key decisions in play
 - [[ADR-0001]] foundations; [[ADR-0002]] versioning + audit.
-- `InferenceRun` is NOT `VersionedBase` — it is an immutable event record (written once, no revisions).
-- Audit `record_event` normalises payloads via `json.loads(json.dumps(..., default=str))` so UUID
-  and datetime values are stored as strings in the JSON column.
+- `InferenceRun`, `Evaluation`, `EvaluationResult` are NOT `VersionedBase` — immutable event records.
+- `Metric` IS `VersionedBase` — it's a revisable definition (like Prompt).
+- Audit `record_event` normalises payloads via `json.loads(json.dumps(..., default=str))`.
 
 ## Open threads / next-phase notes
 - **Frontend shell** files exist but **not build-verified** (no Node/Rust toolchain; risk R6).
 - **docker-compose** authored but not run here.
-- Phase 3 needs: Metric model, Evaluation model, Run→Evaluation orchestration, metric catalog
-  (exact-match, similarity), confidence levels, in-process fallback (no Temporal cluster needed).
+- Phase 4 needs: React UI shell, EvaluationCard, MetricCard, TrustIndicator, AuditTimeline.
 - Concurrency note: audit hash chain uses last-seq lookup; fine for single-writer/offline.
   Revisit for concurrent writers before multi-user (Phase 11).

@@ -52,5 +52,23 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 | Audit bugfix: UUID→str in JSON payload | ✅ | `audit.record_event` normalises via json round-trip |
 | Tests (success, offline-fail, missing-var 422, not-found 404, list/filter, audit event) | ✅ | 18/18 passed |
 
-## Phases 3–11 ⬜ Not started
-See [progress.md](./progress.md). **STOP for review before starting Phase 3.**
+## Phase 3 — Evaluation Engine + Metrics ✅ (backend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `Metric` entity (VersionedBase) — name, description, kind, config | ✅ | `app/models/metric.py` |
+| `Evaluation` model (immutable event) — full provenance + aggregate_scores | ✅ | `app/models/evaluation.py` |
+| `EvaluationResult` model (immutable event) — per-item score record | ✅ | `app/models/evaluation_result.py` |
+| Metric scorer Protocol + `MetricInput`/`MetricScore` dataclasses | ✅ | `app/services/metrics/base.py` |
+| `ExactMatchMetric` — normalized string equality, confidence "high" | ✅ | `app/services/metrics/exact_match.py` |
+| `ContainsMetric` — substring search, confidence "medium" | ✅ | `app/services/metrics/contains.py` |
+| `SemanticSimilarityMetric` — pure-Python TF cosine, no ML deps, confidence "low" | ✅ | `app/services/metrics/semantic_sim.py` |
+| Metric scorer registry (`get_scorer(kind)`) | ✅ | `app/services/metrics/registry.py` |
+| `metric_service` — thin CRUD over versioning service | ✅ | `app/services/metric_service.py` |
+| `evaluation_service.execute_evaluation` — in-process orchestration, no Temporal | ✅ | provider fails → `status="partial/failed"` |
+| Metrics API (`POST/GET /metrics`, `/{key}`, `/{key}/versions`) | ✅ | `app/api/metrics.py` |
+| Evaluations API (`POST/GET /evaluations`, `/{id}`, `/{id}/results`) | ✅ | `app/api/evaluations.py` |
+| Migration `a8a557afd538` (metrics + evaluations + evaluation_results tables) | ✅ | `alembic check` clean |
+| Tests (metric CRUD, exact_match/contains/similarity, provenance, filter, errors) | ✅ | 33/33 passed |
+
+## Phases 4–11 ⬜ Not started
+See [progress.md](./progress.md). **STOP for review before starting Phase 4.**
