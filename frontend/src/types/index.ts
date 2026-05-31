@@ -1,0 +1,107 @@
+export interface Health {
+  status: string;
+  service: string;
+  version: string;
+  env: string;
+  offline_first: boolean;
+}
+
+export interface VersionedEntity {
+  id: string;
+  entity_key: string;
+  version: number;
+  is_latest: boolean;
+  created_at: string;
+  created_by: string;
+  parent_version_id: string | null;
+}
+
+export interface Prompt extends VersionedEntity {
+  name: string;
+  description: string;
+  template: string;
+  input_variables: string[];
+}
+
+export interface DatasetItem {
+  input: Record<string, unknown>;
+  expected: string;
+}
+
+export interface Dataset extends VersionedEntity {
+  name: string;
+  description: string;
+  items: DatasetItem[];
+  item_count: number;
+}
+
+export interface Metric extends VersionedEntity {
+  name: string;
+  description: string;
+  kind: "exact_match" | "contains" | "semantic_similarity";
+  config: Record<string, unknown>;
+}
+
+export interface ConfidenceDistribution {
+  high?: number;
+  medium?: number;
+  low?: number;
+}
+
+export interface AggregateScore {
+  mean_score: number;
+  count: number;
+  metric_name: string;
+  metric_kind: string;
+  confidence_distribution: ConfidenceDistribution;
+}
+
+export interface Evaluation {
+  id: string;
+  name: string;
+  prompt_key: string;
+  prompt_version_id: string;
+  model_key: string;
+  model_version_id: string;
+  provider_key: string;
+  dataset_key: string;
+  dataset_version_id: string;
+  metric_keys: string[];
+  metric_version_ids: string[];
+  parameters: Record<string, unknown>;
+  status: "completed" | "partial" | "failed";
+  total_items: number;
+  scored_items: number;
+  aggregate_scores: Record<string, AggregateScore>;
+  error: string | null;
+  created_at: string;
+  created_by: string;
+}
+
+export interface EvaluationResult {
+  id: string;
+  evaluation_id: string;
+  run_id: string;
+  dataset_item_index: number;
+  metric_key: string;
+  metric_kind: string;
+  score: number;
+  confidence: string;
+  detail: Record<string, unknown>;
+  status: string;
+  created_at: string;
+}
+
+export interface AuditEvent {
+  seq: number;
+  id: string;
+  occurred_at: string;
+  actor: string;
+  action: string;
+  entity_type: string;
+  entity_key: string;
+  entity_version_id: string | null;
+  payload: Record<string, unknown>;
+  prev_hash: string | null;
+  hash: string;
+}

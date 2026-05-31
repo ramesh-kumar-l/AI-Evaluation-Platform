@@ -70,5 +70,30 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 | Migration `a8a557afd538` (metrics + evaluations + evaluation_results tables) | ✅ | `alembic check` clean |
 | Tests (metric CRUD, exact_match/contains/similarity, provenance, filter, errors) | ✅ | 33/33 passed |
 
-## Phases 4–11 ⬜ Not started
-See [progress.md](./progress.md). **STOP for review before starting Phase 4.**
+## Phase 4 — Trust-First Result UI 🟡 (frontend — authored, not build-verified)
+| Item | Status | Notes |
+|------|--------|-------|
+| `src/types/index.ts` — all API response types | 🟡 | Health, Evaluation, Metric, Dataset, AuditEvent, EvaluationResult |
+| `src/lib/api.ts` — full API client | 🟡 | getHealth, listEvaluations, getEvaluation, getEvaluationResults, listMetrics, getMetric, listDatasets, listAuditEvents |
+| `src/lib/utils.ts` — formatting helpers | 🟡 | shortId, formatDate, formatScore, scoreColor, confidenceVariant, statusVariant |
+| `src/components/ui/Badge.tsx` — semantic status badge | 🟡 | trust/warning/danger/muted variants |
+| `src/components/ui/Card.tsx` — card with header/body | 🟡 | primitive container |
+| `src/components/ui/Spinner.tsx` — loading indicator | 🟡 | accessible, animated |
+| `src/components/TrustIndicator.tsx` — confidence badge | 🟡 | high(●)/medium(◑)/low(○) with semantic color |
+| `src/components/MetricCard.tsx` — metric result card | 🟡 | name, kind, mean_score, confidence distribution, version ID |
+| `src/components/EvaluationCard.tsx` — evaluation summary | 🟡 | status, provenance IDs, link to detail |
+| `src/components/AuditTimeline.tsx` — hash-chained event list | 🟡 | hash fingerprints, seq, actor, action |
+| `src/app/Layout.tsx` — sidebar nav shell | 🟡 | Dashboard / Evaluations / Datasets / Audit Trail |
+| `src/app/App.tsx` — React Router v6 setup | 🟡 | BrowserRouter + nested Routes |
+| `src/pages/DashboardPage.tsx` — health + recent evals | 🟡 | API health indicator, last 5 evals |
+| `src/pages/EvaluationsPage.tsx` — evaluation list | 🟡 | grid of EvaluationCards |
+| `src/pages/EvaluationDetailPage.tsx` — trust-first detail | 🟡 | ALL 8 trust fields: provenance (1–4), method (5), metric defs+confidence (6), approval stub (7), audit history (8) |
+| `src/pages/DatasetsPage.tsx` — dataset list | 🟡 | version, item_count, created_by |
+| `src/pages/AuditPage.tsx` — full audit trail | 🟡 | AuditTimeline with hash chain |
+| `package.json` — added react-router-dom ^6.26.0 | 🟡 | only dep change; types bundled in package |
+| Exit criteria: every trust field shown for a real eval | 🟡 | All 8 fields present in EvaluationDetailPage; verified by code review; live test blocked by R6 (no Node/Rust toolchain locally) |
+
+**Note:** 🟡 = authored, not live-tested locally (R6: no Node.js toolchain in dev environment). CI will verify `tsc --noEmit` + `vite build`.
+
+## Phases 5–11 ⬜ Not started
+See [progress.md](./progress.md). **STOP for review before starting Phase 5.**
