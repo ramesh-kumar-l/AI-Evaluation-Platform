@@ -233,3 +233,73 @@ export interface DatasetPolicy {
   updated_at: string;
   created_by: string;
 }
+
+// ---------------------------------------------------------------------------
+// Phase 8 — RAG Evaluation
+// ---------------------------------------------------------------------------
+
+export interface RagCorpus {
+  id: string;
+  entity_key: string;
+  version: number;
+  parent_id: string | null;
+  is_latest: boolean;
+  created_at: string;
+  created_by: string;
+  name: string;
+  description: string;
+  embedding_model: string;
+  chunk_size: number;
+  chunk_overlap: number;
+}
+
+export interface RagDocument {
+  id: string;
+  corpus_key: string;
+  content: string;
+  chunk_index: number;
+  doc_source: string;
+  created_at: string;
+  created_by: string;
+}
+
+export interface RagSearchResult {
+  doc_id: string;
+  content: string;
+  doc_source: string;
+  score: number;
+}
+
+export interface RagSearchResponse {
+  query: string;
+  corpus_key: string;
+  results: RagSearchResult[];
+}
+
+export interface RagEval {
+  id: string;
+  corpus_key: string;
+  dataset_key: string;
+  retrieval_method: string;
+  top_k: number;
+  query_count: number;
+  mean_context_relevance: number;
+  mean_faithfulness: number;
+  mean_answer_relevance: number;
+  status: string;
+  created_at: string;
+  created_by: string;
+}
+
+export interface RagEvalResult {
+  id: string;
+  rag_eval_id: string;
+  query_text: string;
+  retrieved_doc_ids: string[];
+  retrieved_content: string[];
+  answer_text: string;
+  context_relevance_score: number;
+  faithfulness_score: number;
+  answer_relevance_score: number;
+  created_at: string;
+}

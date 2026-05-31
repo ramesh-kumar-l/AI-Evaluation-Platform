@@ -3,6 +3,11 @@ import type {
   AuditEvent,
   Benchmark,
   Comparison,
+  RagCorpus,
+  RagDocument,
+  RagEval,
+  RagEvalResult,
+  RagSearchResponse,
   Dataset,
   DatasetPolicy,
   Evaluation,
@@ -221,4 +226,77 @@ export function upsertDatasetPolicy(
 
 export function getDatasetPolicy(datasetKey: string): Promise<DatasetPolicy> {
   return request<DatasetPolicy>(`/datasets/${datasetKey}/policy`);
+}
+
+// ---------------------------------------------------------------------------
+// Phase 8 — RAG Evaluation
+// ---------------------------------------------------------------------------
+
+export function createRagCorpus(body: {
+  name: string;
+  description?: string;
+  embedding_model?: string;
+  chunk_size?: number;
+  chunk_overlap?: number;
+}): Promise<RagCorpus> {
+  return request<RagCorpus>("/rag/corpora", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function listRagCorpora(): Promise<RagCorpus[]> {
+  return request<RagCorpus[]>("/rag/corpora");
+}
+
+export function getRagCorpus(corpusKey: string): Promise<RagCorpus> {
+  return request<RagCorpus>(`/rag/corpora/${corpusKey}`);
+}
+
+export function ingestDocuments(
+  corpusKey: string,
+  documents: { content: string; chunk_index?: number; doc_source?: string }[],
+): Promise<RagDocument[]> {
+  return request<RagDocument[]>(`/rag/corpora/${corpusKey}/documents`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ documents }),
+  });
+}
+
+export function listRagDocuments(corpusKey: string): Promise<RagDocument[]> {
+  return request<RagDocument[]>(`/rag/corpora/${corpusKey}/documents`);
+}
+
+export function searchRagCorpus(
+  corpusKey: string,
+  query: string,
+  topK = 5,
+): Promise<RagSearchResponse> {
+  return request<RagSearchResponse>(`/rag/corpora/${corpusKey}/search`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, top_k: topK }),
+  });
+}
+
+export function runRagEval(body: {
+  corpus_key: string;
+  dataset_key: string;
+  top_k?: number;
+}): Promise<RagEval> {
+  return request<RagEval>("/rag/evaluations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function getRagEval(evalId: string): Promise<RagEval> {
+  return request<RagEval>(`/rag/evaluations/${evalId}`);
+}
+
+export function getRagEvalResults(evalId: string): Promise<RagEvalResult[]> {
+  return request<RagEvalResult[]>(`/rag/evaluations/${evalId}/results`);
 }

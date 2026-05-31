@@ -17,6 +17,10 @@ from app.models.gate_decision import GateDecision
 from app.models.metric import Metric
 from app.models.prompt import Prompt
 from app.models.provider import Model, Provider
+from app.models.rag_corpus import RagCorpus
+from app.models.rag_document import RagDocument
+from app.models.rag_eval import RagEval
+from app.models.rag_eval_result import RagEvalResult
 from app.models.release_gate import ReleaseGate
 from app.models.run import InferenceRun
 
@@ -36,5 +40,9 @@ __all__ = [
     "Model",
     "Prompt",
     "Provider",
+    "RagCorpus",
+    "RagDocument",
+    "RagEval",
+    "RagEvalResult",
     "ReleaseGate",
 ]

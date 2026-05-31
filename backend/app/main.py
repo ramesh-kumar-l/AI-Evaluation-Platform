@@ -19,6 +19,7 @@ from app.api import (
     metrics,
     prompts,
     providers,
+    rag,
     runs,
 )
 from app.core.config import get_settings
@@ -63,6 +64,7 @@ def create_app() -> FastAPI:
     app.include_router(comparisons.router)
     app.include_router(gates.router)
     app.include_router(benchmarks.router)
+    app.include_router(rag.router)
     return app
 
 
