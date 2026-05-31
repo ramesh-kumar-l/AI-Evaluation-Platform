@@ -10,7 +10,8 @@ _Last updated: 2026-05-31_
 - **Phase 4 — Trust-First Result UI: AUTHORED (frontend) — not live-tested (R6); CI-gated.**
 - **Phase 5 — Comparison & Regression Detection: COMPLETE (backend ✅) / AUTHORED (frontend 🟡).**
 - **Phase 6 — Release Gates & Approvals → MVP: COMPLETE (backend ✅ verified) / AUTHORED (frontend 🟡 CI-gated). MVP REACHED.**
-- Next up: **Phase 7 — Dataset & Benchmark Governance** (post-MVP depth, STOP for review first).
+- **Phase 7 — Dataset & Benchmark Governance: COMPLETE (backend ✅ verified) / AUTHORED (frontend 🟡 CI-gated).**
+- Next up: **Phase 8 — RAG Evaluation** (STOP for review first).
 
 ## What works right now
 - Backend boots fully offline (SQLite fallback, no infra) — `uvicorn app.main:app`.
@@ -51,5 +52,6 @@ uv pip install -e ".[dev]"
 - **docker-compose** authored but not run here.
 - Migrations so far: a40763e31c9b → b3556b7705c3 → a8a557afd538 → c5d6e7f8a9b0 → d6e7f8a9b0c1.
 - **Phase 6 complete (backend).** GateDecision status lifecycle: passed/failed/pending_approval/approved/rejected/overridden. Approval with mandatory justification (min 10 chars). Override of failed decisions fully audited.
+- **Phase 7 complete (backend).** Benchmark VersionedBase with lifecycle state machine (draft→active→deprecated→archived, with draft→deprecated shortcut). DatasetPolicy mutable governance record (upsert, one per dataset_key). Migration chain: ...→ d6e7f8a9b0c1 → e7f8a9b0c1d2. 77/77 tests, ruff/mypy(75 files)/alembic clean.
 - Concurrency note: audit hash chain uses last-seq lookup; fine for single-writer/offline.
   Revisit for concurrent writers before multi-user (Phase 11).

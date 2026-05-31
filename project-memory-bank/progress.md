@@ -16,7 +16,7 @@ breakdowns are produced when each phase is individually approved.
 | **P6** Release Gates & Approvals → **MVP** | "Can we safely deploy?" | End-to-end dataset→eval→compare→gate→approval, audited | ✅ Complete (backend) / 🟡 UI authored |
 
 ## Milestone 2 — Depth & Breadth (post-MVP)
-- **P7** Dataset & Benchmark Governance
+- **P7** Dataset & Benchmark Governance ✅ Complete (backend) / 🟡 UI authored
 - **P8** RAG Evaluation
 - **P9** Agent & Tool Evaluation
 - **P10** Observability & Continuous Evaluation

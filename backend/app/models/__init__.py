@@ -7,8 +7,10 @@ Importing this package registers all models on ``Base.metadata`` so Alembic auto
 from app.models.approval import Approval
 from app.models.audit_event import AuditEvent
 from app.models.base import Base
+from app.models.benchmark import Benchmark
 from app.models.comparison import Comparison
 from app.models.dataset import Dataset
+from app.models.dataset_policy import DatasetPolicy
 from app.models.evaluation import Evaluation
 from app.models.evaluation_result import EvaluationResult
 from app.models.gate_decision import GateDecision
@@ -22,8 +24,10 @@ __all__ = [
     "Approval",
     "AuditEvent",
     "Base",
+    "Benchmark",
     "Comparison",
     "Dataset",
+    "DatasetPolicy",
     "Evaluation",
     "EvaluationResult",
     "GateDecision",

@@ -135,5 +135,25 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 | `src/app/Layout.tsx` + `App.tsx` — Release Gates nav + /gates route | 🟡 | |
 | Exit criteria: end-to-end dataset→eval→compare→gate→approval, fully audited | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
 
-## Phases 7–11 ⬜ Not started
-See [progress.md](./progress.md). Phase 6 = MVP complete (backend). STOP for review before starting Phase 7.
+## Phase 7 — Dataset & Benchmark Governance ✅ (backend) / 🟡 (frontend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `app/models/benchmark.py` — `Benchmark` versioned entity | ✅ | name, domain, task_type, metric_keys, dataset_key, status (draft/active/deprecated/archived) |
+| `app/models/dataset_policy.py` — `DatasetPolicy` mutable governance record | ✅ | one per dataset_key; quality_rules, ground_truth_policy, owner, status |
+| `app/schemas/benchmark.py` — `BenchmarkCreate`, `BenchmarkOut`, `BenchmarkStatusUpdate` | ✅ | status validator |
+| `app/schemas/dataset_policy.py` — `DatasetPolicyUpsert`, `DatasetPolicyOut` | ✅ | status validator |
+| `app/services/benchmark_service.py` — create, get, list, set_status | ✅ | lifecycle state machine: draft→active→deprecated→archived; draft→deprecated shortcut |
+| `app/services/dataset_policy_service.py` — upsert, get | ✅ | validates dataset exists; audit on every upsert |
+| `app/api/benchmarks.py` — POST/GET /benchmarks, GET /{key}, PATCH /{key}/status | ✅ | 422 on invalid lifecycle transition |
+| `app/api/datasets.py` — PUT/GET /datasets/{key}/policy | ✅ | appended policy endpoints |
+| Migration `e7f8a9b0c1d2` (benchmarks + dataset_policies tables) | ✅ | `alembic check` clean; indexes: ix_benchmarks_entity_key, ix_benchmarks_status, ix_dataset_policies_dataset_key |
+| `app/models/__init__.py` + `app/main.py` wired | ✅ | |
+| Tests (create, list, filter by status, 404, draft→active, active→deprecated, deprecated→archived, draft→deprecated skip, invalid transition 422, unknown status 422, new version created, policy create, policy update, policy GET, policy 404, dataset not found 422, invalid status 422) | ✅ | **77/77 passed** · ruff ✅ · mypy --strict ✅ (75 files) · alembic clean ✅ |
+| `src/types/index.ts` — `Benchmark`, `BenchmarkStatus`, `DatasetPolicy` types | 🟡 | |
+| `src/lib/api.ts` — createBenchmark, listBenchmarks, getBenchmark, setBenchmarkStatus, upsertDatasetPolicy, getDatasetPolicy | 🟡 | |
+| `src/pages/BenchmarksPage.tsx` — BenchmarkExplorer + DatasetPolicyPanel | 🟡 | create form, list, lifecycle transitions, dataset policy inline |
+| `src/app/Layout.tsx` + `App.tsx` — Benchmarks nav + /benchmarks route | 🟡 | |
+| Exit criteria: benchmark created, lifecycle transitioned, dataset policy attached, all audited | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
+
+## Phases 8–11 ⬜ Not started
+See [progress.md](./progress.md). STOP for review before starting Phase 8.

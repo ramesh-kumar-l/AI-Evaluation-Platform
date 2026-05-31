@@ -1,8 +1,10 @@
 import type {
   Approval,
   AuditEvent,
+  Benchmark,
   Comparison,
   Dataset,
+  DatasetPolicy,
   Evaluation,
   EvaluationResult,
   GateDecision,
@@ -154,4 +156,69 @@ export function approveDecision(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7 — Benchmarks
+// ---------------------------------------------------------------------------
+
+export function createBenchmark(body: {
+  name: string;
+  description?: string;
+  domain?: string;
+  task_type?: string;
+  metric_keys?: string[];
+  dataset_key?: string | null;
+  notes?: string | null;
+}): Promise<Benchmark> {
+  return request<Benchmark>("/benchmarks", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function listBenchmarks(byStatus?: string): Promise<Benchmark[]> {
+  const qs = byStatus ? `?by_status=${byStatus}` : "";
+  return request<Benchmark[]>(`/benchmarks${qs}`);
+}
+
+export function getBenchmark(benchmarkKey: string): Promise<Benchmark> {
+  return request<Benchmark>(`/benchmarks/${benchmarkKey}`);
+}
+
+export function setBenchmarkStatus(
+  benchmarkKey: string,
+  body: { status: string; notes?: string | null },
+): Promise<Benchmark> {
+  return request<Benchmark>(`/benchmarks/${benchmarkKey}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7 — Dataset Policies
+// ---------------------------------------------------------------------------
+
+export function upsertDatasetPolicy(
+  datasetKey: string,
+  body: {
+    owner?: string;
+    status?: string;
+    quality_rules?: Record<string, unknown>;
+    ground_truth_policy?: Record<string, unknown>;
+    notes?: string | null;
+  },
+): Promise<DatasetPolicy> {
+  return request<DatasetPolicy>(`/datasets/${datasetKey}/policy`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function getDatasetPolicy(datasetKey: string): Promise<DatasetPolicy> {
+  return request<DatasetPolicy>(`/datasets/${datasetKey}/policy`);
 }

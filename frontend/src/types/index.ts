@@ -196,3 +196,40 @@ export interface Approval {
   created_at: string;
   created_by: string;
 }
+
+// ---------------------------------------------------------------------------
+// Phase 7 — Dataset & Benchmark Governance
+// ---------------------------------------------------------------------------
+
+export type BenchmarkStatus = "draft" | "active" | "deprecated" | "archived";
+
+export interface Benchmark {
+  id: string;
+  entity_key: string;
+  version: number;
+  parent_id: string | null;
+  is_latest: boolean;
+  created_at: string;
+  created_by: string;
+  name: string;
+  description: string;
+  domain: string;
+  task_type: string;
+  metric_keys: string[];
+  dataset_key: string | null;
+  status: BenchmarkStatus;
+  notes: string | null;
+}
+
+export interface DatasetPolicy {
+  id: string;
+  dataset_key: string;
+  owner: string;
+  status: "active" | "deprecated" | "archived";
+  quality_rules: Record<string, unknown>;
+  ground_truth_policy: Record<string, unknown>;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+}

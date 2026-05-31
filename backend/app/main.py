@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from app import __version__
 from app.api import (
     audit,
+    benchmarks,
     comparisons,
     datasets,
     evaluations,
@@ -61,6 +62,7 @@ def create_app() -> FastAPI:
     app.include_router(evaluations.router)
     app.include_router(comparisons.router)
     app.include_router(gates.router)
+    app.include_router(benchmarks.router)
     return app
 
 
