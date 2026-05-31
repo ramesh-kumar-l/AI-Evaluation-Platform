@@ -17,7 +17,7 @@ breakdowns are produced when each phase is individually approved.
 
 ## Milestone 2 — Depth & Breadth (post-MVP)
 - **P7** Dataset & Benchmark Governance ✅ Complete (backend) / 🟡 UI authored
-- **P8** RAG Evaluation
+- **P8** RAG Evaluation ✅ Complete (backend) / 🟡 UI authored
 - **P9** Agent & Tool Evaluation
 - **P10** Observability & Continuous Evaluation
 - **P11** Governance, Security, Accessibility, Docs & Deployment Hardening

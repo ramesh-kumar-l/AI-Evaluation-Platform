@@ -155,5 +155,32 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 | `src/app/Layout.tsx` + `App.tsx` — Benchmarks nav + /benchmarks route | 🟡 | |
 | Exit criteria: benchmark created, lifecycle transitioned, dataset policy attached, all audited | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
 
-## Phases 8–11 ⬜ Not started
-See [progress.md](./progress.md). STOP for review before starting Phase 8.
+## Phase 8 — RAG Evaluation ✅ (backend) / 🟡 (frontend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `app/models/rag_corpus.py` — `RagCorpus` versioned entity | ✅ | name, description, embedding_model ("tf-idf" default), chunk_size, chunk_overlap |
+| `app/models/rag_document.py` — `RagDocument` immutable chunk | ✅ | corpus_key, content, chunk_index, doc_source, embedding (JSON TF vector) |
+| `app/models/rag_eval.py` — `RagEval` immutable event | ✅ | corpus_key, dataset_key, top_k, query_count, mean_context_relevance, mean_faithfulness, mean_answer_relevance, status |
+| `app/models/rag_eval_result.py` — `RagEvalResult` immutable per-query | ✅ | rag_eval_id, query_text, retrieved_doc_ids, retrieved_content, answer_text, 3 scores |
+| `app/schemas/rag.py` — all RAG schemas | ✅ | RagCorpusCreate/Out, RagDocumentCreate/Out, RagSearchRequest/Response, RagEvalCreate/Out, RagEvalResultOut |
+| `app/services/metrics/_utils.py` — shared TF-cosine utils | ✅ | tf_vector, cosine — offline, no ML deps |
+| `app/services/metrics/context_relevance.py` — mean TF-cosine(query, docs) | ✅ | confidence "medium" |
+| `app/services/metrics/faithfulness.py` — overlap coefficient(answer, context) | ✅ | confidence "low" |
+| `app/services/metrics/answer_relevance.py` — TF-cosine(question, answer) | ✅ | confidence "medium" |
+| `app/services/rag_corpus_service.py` — create/get/list corpora | ✅ | wraps versioning service |
+| `app/services/rag_document_service.py` — ingest_documents, list_documents | ✅ | computes TF embedding on ingest; validates corpus exists |
+| `app/services/rag_retrieval_service.py` — retrieve(db, corpus_key, query, top_k) | ✅ | pure-Python TF-IDF cosine; swap for pgvector ANN in production |
+| `app/services/rag_eval_service.py` — run_rag_eval orchestrator | ✅ | retrieve → score 3 metrics per query → persist results + aggregate; audit event |
+| `app/api/rag.py` — all RAG endpoints | ✅ | POST/GET /rag/corpora, POST /corpora/{key}/documents, GET /corpora/{key}/documents, POST /corpora/{key}/search, POST/GET /rag/evaluations, GET /evaluations/{id}/results |
+| Migration `f0a1b2c3d4e5` (rag_corpora + rag_documents + rag_evals + rag_eval_results) | ✅ | alembic check clean; 5 indexes |
+| `app/models/__init__.py` + `app/main.py` wired | ✅ | |
+| Tests (corpus CRUD, doc ingest, 422s, search, empty-corpus, RAG eval run, results, 404s, scorer unit tests) | ✅ | **96/96 passed** · ruff ✅ · mypy --strict ✅ (89 files) · alembic clean ✅ |
+| `src/types/index.ts` — RagCorpus, RagDocument, RagSearchResponse, RagEval, RagEvalResult types | 🟡 | |
+| `src/lib/api.ts` — createRagCorpus, listRagCorpora, getRagCorpus, ingestDocuments, listRagDocuments, searchRagCorpus, runRagEval, getRagEval, getRagEvalResults | 🟡 | |
+| `src/pages/RagCorpusPanels.tsx` — CorpusCreateForm, IngestPanel, SearchPanel | 🟡 | <300 lines |
+| `src/pages/RagPage.tsx` — EvalPanel, CorpusDetail, RagPage (2-col layout) | 🟡 | <300 lines; /rag route |
+| `src/app/Layout.tsx` + `App.tsx` — RAG Eval nav + /rag route | 🟡 | |
+| Exit criteria: corpus created, docs ingested, retrieval tested, RAG eval scored | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
+
+## Phases 9–11 ⬜ Not started
+See [progress.md](./progress.md). STOP for review before starting Phase 9.

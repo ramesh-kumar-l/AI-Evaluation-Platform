@@ -4,6 +4,7 @@ import { DashboardPage } from "@/pages/DashboardPage";
 import { EvaluationsPage } from "@/pages/EvaluationsPage";
 import { EvaluationDetailPage } from "@/pages/EvaluationDetailPage";
 import { BenchmarksPage } from "@/pages/BenchmarksPage";
+import { RagPage } from "@/pages/RagPage";
 import { ComparePage } from "@/pages/ComparePage";
 import { GatesPage } from "@/pages/GatesPage";
 import { DatasetsPage } from "@/pages/DatasetsPage";
@@ -20,6 +21,7 @@ export function App() {
           <Route path="compare" element={<ComparePage />} />
           <Route path="gates" element={<GatesPage />} />
           <Route path="benchmarks" element={<BenchmarksPage />} />
+          <Route path="rag" element={<RagPage />} />
           <Route path="datasets" element={<DatasetsPage />} />
           <Route path="audit" element={<AuditPage />} />
         </Route>

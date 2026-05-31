@@ -1,0 +1,5 @@
+# AI Evaluation Platform backend dependencies.
+# This convenience file is intentionally comprehensive: runtime + observability + dev tooling.
+# For production-only installs, use backend/requirements.txt.
+
+-r backend/requirements-dev.txt
