@@ -1,4 +1,3 @@
-import React from "react";
 import type { MetricDelta } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { formatScore } from "@/lib/utils";
