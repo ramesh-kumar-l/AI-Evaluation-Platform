@@ -134,3 +134,65 @@ export interface Comparison {
   status: "regression" | "improvement" | "neutral";
   notes: string | null;
 }
+
+export interface GateCriterion {
+  metric_key: string;
+  min_score: number;
+}
+
+export interface ReleaseGate {
+  id: string;
+  entity_key: string;
+  version: number;
+  parent_id: string | null;
+  is_latest: boolean;
+  created_at: string;
+  created_by: string;
+  name: string;
+  description: string;
+  criteria: GateCriterion[];
+  max_regressions_allowed: number;
+  require_approval: boolean;
+  notes: string | null;
+}
+
+export interface CriterionResult {
+  metric_key: string;
+  min_score: number;
+  candidate_score: number;
+  passed: boolean;
+}
+
+export type GateDecisionStatus =
+  | "passed"
+  | "failed"
+  | "pending_approval"
+  | "approved"
+  | "rejected"
+  | "overridden";
+
+export interface GateDecision {
+  id: string;
+  gate_key: string;
+  gate_version_id: string;
+  comparison_id: string;
+  criteria_results: Record<string, CriterionResult>;
+  criteria_passed: number;
+  criteria_failed: number;
+  regressions_detected: number;
+  max_regressions_allowed: number;
+  status: GateDecisionStatus;
+  override: boolean;
+  override_justification: string | null;
+  created_at: string;
+  created_by: string;
+}
+
+export interface Approval {
+  id: string;
+  decision_id: string;
+  action: "approved" | "rejected" | "overridden";
+  justification: string;
+  created_at: string;
+  created_by: string;
+}

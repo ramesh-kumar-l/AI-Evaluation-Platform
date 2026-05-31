@@ -1,11 +1,14 @@
 import type {
-  Health,
-  Evaluation,
-  EvaluationResult,
-  Metric,
-  Dataset,
+  Approval,
   AuditEvent,
   Comparison,
+  Dataset,
+  Evaluation,
+  EvaluationResult,
+  GateDecision,
+  Health,
+  Metric,
+  ReleaseGate,
 } from "@/types";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
@@ -98,4 +101,57 @@ export function listComparisons(params?: {
 
 export function getComparison(id: string): Promise<Comparison> {
   return request<Comparison>(`/comparisons/${id}`);
+}
+
+// ---------------------------------------------------------------------------
+// Release Gates
+// ---------------------------------------------------------------------------
+
+export function createGate(body: {
+  name: string;
+  description?: string;
+  criteria: { metric_key: string; min_score: number }[];
+  max_regressions_allowed?: number;
+  require_approval?: boolean;
+  notes?: string;
+}): Promise<ReleaseGate> {
+  return request<ReleaseGate>("/gates", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function listGates(): Promise<ReleaseGate[]> {
+  return request<ReleaseGate[]>("/gates");
+}
+
+export function getGate(gateKey: string): Promise<ReleaseGate> {
+  return request<ReleaseGate>(`/gates/${gateKey}`);
+}
+
+export function evaluateGate(
+  gateKey: string,
+  comparisonId: string,
+): Promise<GateDecision> {
+  return request<GateDecision>(`/gates/${gateKey}/evaluate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ comparison_id: comparisonId }),
+  });
+}
+
+export function listGateDecisions(gateKey: string): Promise<GateDecision[]> {
+  return request<GateDecision[]>(`/gates/${gateKey}/decisions`);
+}
+
+export function approveDecision(
+  decisionId: string,
+  body: { action: string; justification: string },
+): Promise<Approval> {
+  return request<Approval>(`/gates/decisions/${decisionId}/approve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 }

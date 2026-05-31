@@ -13,6 +13,7 @@ from app.api import (
     comparisons,
     datasets,
     evaluations,
+    gates,
     health,
     metrics,
     prompts,
@@ -59,6 +60,7 @@ def create_app() -> FastAPI:
     app.include_router(metrics.router)
     app.include_router(evaluations.router)
     app.include_router(comparisons.router)
+    app.include_router(gates.router)
     return app
 
 

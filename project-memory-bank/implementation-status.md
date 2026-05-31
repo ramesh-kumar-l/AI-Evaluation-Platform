@@ -113,5 +113,27 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 | `src/app/Layout.tsx` + `App.tsx` — Compare nav + /compare route | 🟡 | |
 | Exit criteria: regression detected, shown with evidence, recorded | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
 
-## Phases 6–11 ⬜ Not started
-See [progress.md](./progress.md). **STOP for review before starting Phase 6.**
+## Phase 6 — Release Gates & Approvals → MVP ✅ (backend) / 🟡 (frontend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `app/models/release_gate.py` — `ReleaseGate` versioned entity | ✅ | name, criteria JSON, max_regressions_allowed, require_approval |
+| `app/models/gate_decision.py` — `GateDecision` immutable event | ✅ | status lifecycle: passed/failed/pending_approval/approved/rejected/overridden |
+| `app/models/approval.py` — `Approval` immutable event | ✅ | action + mandatory justification |
+| `app/schemas/release_gate.py` — `ReleaseGateCreate`, `ReleaseGateOut` | ✅ | GateCriterionIn with min_score validation |
+| `app/schemas/gate_decision.py` — `GateDecisionOut`, `ApprovalCreate`, `ApprovalOut` | ✅ | action validator |
+| `app/services/gate_service.py` — create gate, evaluate gate | ✅ | per-criterion check, regression count check, status logic |
+| `app/services/approval_service.py` — approve/reject/override | ✅ | state machine validation + audit |
+| `app/api/gates.py` — all gate endpoints | ✅ | POST/GET /gates, POST /{gate_key}/evaluate, GET /{gate_key}/decisions, POST /decisions/{id}/approve |
+| Migration `d6e7f8a9b0c1` (release_gates + gate_decisions + approvals tables) | ✅ | `alembic check` clean |
+| `app/models/__init__.py` + `app/main.py` wired | ✅ | |
+| Tests (create, list, 404, evaluate passed/pending/failed criteria/regressions, 422s, approve, reject, override, invalid transition, list decisions) | ✅ | **60/60 passed** · ruff ✅ · mypy --strict ✅ · alembic clean ✅ |
+| `src/types/index.ts` — ReleaseGate, GateDecision, Approval, GateCriterion, CriterionResult types | 🟡 | |
+| `src/lib/api.ts` — createGate, listGates, getGate, evaluateGate, listGateDecisions, approveDecision | 🟡 | |
+| `src/components/GateStatusBadge.tsx` — status badge (passed/failed/pending/approved/rejected/overridden) | 🟡 | |
+| `src/components/GateCriteriaResults.tsx` — per-criterion pass/fail table | 🟡 | |
+| `src/pages/GatesPage.tsx` — create/list gates, evaluate, decisions list, approve/reject/override | 🟡 | |
+| `src/app/Layout.tsx` + `App.tsx` — Release Gates nav + /gates route | 🟡 | |
+| Exit criteria: end-to-end dataset→eval→compare→gate→approval, fully audited | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
+
+## Phases 7–11 ⬜ Not started
+See [progress.md](./progress.md). Phase 6 = MVP complete (backend). STOP for review before starting Phase 7.
