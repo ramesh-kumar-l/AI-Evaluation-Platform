@@ -358,3 +358,66 @@ export interface AgentEvalResult {
   task_completion_score: number;
   created_at: string;
 }
+
+// ---------------------------------------------------------------------------
+// Phase 10 — Observability & Continuous Evaluation
+// ---------------------------------------------------------------------------
+
+export type ScheduleStatus = "active" | "paused" | "archived";
+export type ExperimentStatus = "active" | "concluded" | "archived";
+
+export interface EvalSchedule {
+  id: string;
+  entity_key: string;
+  version: number;
+  name: string;
+  description: string;
+  dataset_key: string;
+  model_key: string;
+  prompt_key: string;
+  metric_keys: string[];
+  cron_expr: string;
+  status: ScheduleStatus;
+  last_run_at: string | null;
+  next_run_at: string | null;
+  created_at: string;
+  created_by: string;
+}
+
+export interface EvalJob {
+  id: string;
+  schedule_id: string;
+  status: "pending" | "running" | "completed" | "failed";
+  eval_id: string | null;
+  error_msg: string;
+  triggered_by: string;
+  started_at: string;
+  completed_at: string | null;
+}
+
+export interface Experiment {
+  id: string;
+  entity_key: string;
+  version: number;
+  name: string;
+  description: string;
+  evaluation_ids: string[];
+  status: ExperimentStatus;
+  hypothesis: string;
+  conclusion: string;
+  created_at: string;
+  created_by: string;
+}
+
+export interface TrendPoint {
+  eval_id: string;
+  created_at: string;
+  mean_score: number;
+  status: string;
+}
+
+export interface TrendOut {
+  dataset_key: string;
+  metric_kind: string;
+  points: TrendPoint[];
+}

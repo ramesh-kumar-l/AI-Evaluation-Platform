@@ -5,6 +5,7 @@ import { EvaluationsPage } from "@/pages/EvaluationsPage";
 import { EvaluationDetailPage } from "@/pages/EvaluationDetailPage";
 import { BenchmarksPage } from "@/pages/BenchmarksPage";
 import { AgentPage } from "@/pages/AgentPage";
+import { ObservabilityPage } from "@/pages/ObservabilityPage";
 import { RagPage } from "@/pages/RagPage";
 import { ComparePage } from "@/pages/ComparePage";
 import { GatesPage } from "@/pages/GatesPage";
@@ -24,6 +25,7 @@ export function App() {
           <Route path="benchmarks" element={<BenchmarksPage />} />
           <Route path="rag" element={<RagPage />} />
           <Route path="agent" element={<AgentPage />} />
+          <Route path="observe" element={<ObservabilityPage />} />
           <Route path="datasets" element={<DatasetsPage />} />
           <Route path="audit" element={<AuditPage />} />
         </Route>

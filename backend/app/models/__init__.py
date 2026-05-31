@@ -15,8 +15,11 @@ from app.models.benchmark import Benchmark
 from app.models.comparison import Comparison
 from app.models.dataset import Dataset
 from app.models.dataset_policy import DatasetPolicy
+from app.models.eval_job import EvalJob
+from app.models.eval_schedule import EvalSchedule
 from app.models.evaluation import Evaluation
 from app.models.evaluation_result import EvaluationResult
+from app.models.experiment import Experiment
 from app.models.gate_decision import GateDecision
 from app.models.metric import Metric
 from app.models.prompt import Prompt
@@ -30,6 +33,9 @@ from app.models.run import InferenceRun
 
 __all__ = [
     "AgentEval",
+    "EvalJob",
+    "EvalSchedule",
+    "Experiment",
     "AgentEvalResult",
     "AgentRun",
     "AgentStep",

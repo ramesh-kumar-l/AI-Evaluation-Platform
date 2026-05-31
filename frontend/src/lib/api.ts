@@ -7,19 +7,23 @@ import type {
   AuditEvent,
   Benchmark,
   Comparison,
+  Dataset,
+  DatasetPolicy,
+  EvalJob,
+  EvalSchedule,
+  Evaluation,
+  EvaluationResult,
+  Experiment,
+  GateDecision,
+  Health,
+  Metric,
   RagCorpus,
   RagDocument,
   RagEval,
   RagEvalResult,
   RagSearchResponse,
-  Dataset,
-  DatasetPolicy,
-  Evaluation,
-  EvaluationResult,
-  GateDecision,
-  Health,
-  Metric,
   ReleaseGate,
+  TrendOut,
 } from "@/types";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
@@ -359,4 +363,97 @@ export function getAgentEval(evalId: string): Promise<AgentEval> {
 
 export function getAgentEvalResults(evalId: string): Promise<AgentEvalResult[]> {
   return request<AgentEvalResult[]>(`/agent/evaluations/${evalId}/results`);
+}
+
+// ---------------------------------------------------------------------------
+// Phase 10 — Observability & Continuous Evaluation
+// ---------------------------------------------------------------------------
+
+export function createEvalSchedule(body: {
+  name: string;
+  description?: string;
+  dataset_key: string;
+  model_key: string;
+  prompt_key: string;
+  metric_keys: string[];
+  cron_expr?: string;
+}): Promise<EvalSchedule> {
+  return request<EvalSchedule>("/observe/schedules", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function listEvalSchedules(byStatus?: string): Promise<EvalSchedule[]> {
+  const qs = byStatus ? `?by_status=${byStatus}` : "";
+  return request<EvalSchedule[]>(`/observe/schedules${qs}`);
+}
+
+export function getEvalSchedule(scheduleKey: string): Promise<EvalSchedule> {
+  return request<EvalSchedule>(`/observe/schedules/${scheduleKey}`);
+}
+
+export function updateScheduleStatus(
+  scheduleKey: string,
+  status: string,
+): Promise<EvalSchedule> {
+  return request<EvalSchedule>(`/observe/schedules/${scheduleKey}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
+}
+
+export function triggerSchedule(scheduleKey: string): Promise<EvalJob> {
+  return request<EvalJob>(`/observe/schedules/${scheduleKey}/trigger`, {
+    method: "POST",
+  });
+}
+
+export function listEvalJobs(scheduleKey: string): Promise<EvalJob[]> {
+  return request<EvalJob[]>(`/observe/schedules/${scheduleKey}/jobs`);
+}
+
+export function createExperiment(body: {
+  name: string;
+  description?: string;
+  evaluation_ids?: string[];
+  hypothesis?: string;
+}): Promise<Experiment> {
+  return request<Experiment>("/observe/experiments", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function listExperiments(byStatus?: string): Promise<Experiment[]> {
+  const qs = byStatus ? `?by_status=${byStatus}` : "";
+  return request<Experiment[]>(`/observe/experiments${qs}`);
+}
+
+export function getExperiment(expKey: string): Promise<Experiment> {
+  return request<Experiment>(`/observe/experiments/${expKey}`);
+}
+
+export function updateExperiment(
+  expKey: string,
+  body: { evaluation_ids?: string[]; status?: string; conclusion?: string },
+): Promise<Experiment> {
+  return request<Experiment>(`/observe/experiments/${expKey}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function getMetricTrend(
+  datasetKey: string,
+  metricKind: string,
+  limit = 50,
+): Promise<TrendOut> {
+  return request<TrendOut>(
+    `/observe/trends?dataset_key=${datasetKey}&metric_kind=${metricKind}&limit=${limit}`,
+  );
 }

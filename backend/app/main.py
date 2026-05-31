@@ -18,6 +18,7 @@ from app.api import (
     gates,
     health,
     metrics,
+    observability,
     prompts,
     providers,
     rag,
@@ -25,6 +26,7 @@ from app.api import (
 )
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
+from app.core.scheduler import configure_scheduler, stop_scheduler
 from app.core.telemetry import configure_telemetry
 
 
@@ -33,6 +35,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     configure_logging(settings)
     log = get_logger(__name__)
+    configure_scheduler()
     log.info(
         "app.startup",
         version=__version__,
@@ -41,6 +44,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         telemetry=settings.telemetry_enabled,
     )
     yield
+    stop_scheduler()
     log.info("app.shutdown")
 
 
@@ -67,6 +71,7 @@ def create_app() -> FastAPI:
     app.include_router(benchmarks.router)
     app.include_router(rag.router)
     app.include_router(agent.router)
+    app.include_router(observability.router)
     return app
 
 

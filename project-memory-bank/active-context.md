@@ -13,7 +13,8 @@ _Last updated: 2026-05-31_
 - **Phase 7 — Dataset & Benchmark Governance: COMPLETE (backend ✅ verified) / AUTHORED (frontend 🟡 CI-gated).**
 - **Phase 8 — RAG Evaluation: COMPLETE (backend ✅ verified) / AUTHORED (frontend 🟡 CI-gated).**
 - **Phase 9 — Agent & Tool Evaluation: COMPLETE (backend ✅ verified) / AUTHORED (frontend 🟡 CI-gated).**
-- Next up: **Phase 10 — Observability & Continuous Evaluation** (STOP for review first).
+- **Phase 10 — Observability & Continuous Evaluation: COMPLETE (backend ✅ verified) / AUTHORED (frontend 🟡 CI-gated).**
+- Next up: **Phase 11 — Governance, Security, Accessibility, Docs & Deployment Hardening** (STOP for review first).
 
 ## What works right now
 - Backend boots fully offline (SQLite fallback, no infra) — `uvicorn app.main:app`.
@@ -52,10 +53,11 @@ uv pip install -e ".[dev]"
 - **Frontend (P4+P5) authored, not live-tested** — CI (`npm install && tsc --noEmit && vite build`)
   is the verification gate. Risk R6 (no Node/Rust toolchain in dev environment).
 - **docker-compose** authored but not run here.
-- Migrations so far: a40763e31c9b → b3556b7705c3 → a8a557afd538 → c5d6e7f8a9b0 → d6e7f8a9b0c1 → e7f8a9b0c1d2 → f0a1b2c3d4e5 → g1b2c3d4e5f6.
+- Migrations so far: a40763e31c9b → b3556b7705c3 → a8a557afd538 → c5d6e7f8a9b0 → d6e7f8a9b0c1 → e7f8a9b0c1d2 → f0a1b2c3d4e5 → g1b2c3d4e5f6 → h2c3d4e5f6g7.
 - **Phase 6 complete (backend).** GateDecision status lifecycle: passed/failed/pending_approval/approved/rejected/overridden. Approval with mandatory justification (min 10 chars). Override of failed decisions fully audited.
 - **Phase 7 complete (backend).** Benchmark VersionedBase with lifecycle state machine (draft→active→deprecated→archived, with draft→deprecated shortcut). DatasetPolicy mutable governance record (upsert, one per dataset_key). Migration chain: ...→ d6e7f8a9b0c1 → e7f8a9b0c1d2. 77/77 tests, ruff/mypy(75 files)/alembic clean.
 - **Phase 8 complete (backend).** RagCorpus (VersionedBase), RagDocument/RagEval/RagEvalResult (immutable events). Pure-Python TF-IDF retrieval (offline-first; pgvector swap-in for production). 3 RAG metric scorers: context_relevance, faithfulness, answer_relevance. 9 endpoints under /rag. Migration f0a1b2c3d4e5. 96/96 tests, ruff/mypy(89 files)/alembic clean.
 - **Phase 9 complete (backend).** AgentRun/AgentStep/AgentEval/AgentEvalResult (immutable events). Submit trajectories + inline steps; match by agent_name+query. 3 scorers: tool_call_accuracy (F1 sets), trajectory_score (Dice-LCS), task_completion (TF-cosine). expected.tools dict format (DatasetItem schema strips extra keys). 8 endpoints under /agent. Migration g1b2c3d4e5f6. 117/117 tests, ruff/mypy(100 files)/alembic clean.
+- **Phase 10 complete (backend).** EvalSchedule (VersionedBase), EvalJob (immutable), Experiment (VersionedBase). Schedule lifecycle: active↔paused→archived. Trigger runs execute_evaluation inline; job records result. Experiment A/B grouping with versioning. Trend query derives from existing Evaluation.aggregate_scores (no new model). APScheduler soft dep (apscheduler optional extra; graceful degrade if not installed). 11 endpoints under /observe. Migration h2c3d4e5f6g7 (3 tables, 7 indexes). 134/134 tests, ruff/mypy(109 files)/alembic clean.
 - Concurrency note: audit hash chain uses last-seq lookup; fine for single-writer/offline.
   Revisit for concurrent writers before multi-user (Phase 11).

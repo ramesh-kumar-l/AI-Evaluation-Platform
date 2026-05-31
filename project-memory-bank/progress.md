@@ -19,7 +19,7 @@ breakdowns are produced when each phase is individually approved.
 - **P7** Dataset & Benchmark Governance ✅ Complete (backend) / 🟡 UI authored
 - **P8** RAG Evaluation ✅ Complete (backend) / 🟡 UI authored
 - **P9** Agent & Tool Evaluation ✅ Complete (backend) / 🟡 UI authored
-- **P10** Observability & Continuous Evaluation
+- **P10** Observability & Continuous Evaluation ✅ Complete (backend) / 🟡 UI authored
 - **P11** Governance, Security, Accessibility, Docs & Deployment Hardening
 
 ## Dependency graph

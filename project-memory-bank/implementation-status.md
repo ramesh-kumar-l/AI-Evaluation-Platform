@@ -206,5 +206,28 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 | `src/app/Layout.tsx` + `App.tsx` — Agent Eval nav + /agent route | 🟡 | |
 | Exit criteria: run submitted, steps recorded, eval scored with 3 metrics | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
 
-## Phases 10–11 ⬜ Not started
-See [progress.md](./progress.md). STOP for review before starting Phase 10.
+## Phase 10 — Observability & Continuous Evaluation ✅ (backend) / 🟡 (frontend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `app/models/eval_schedule.py` — `EvalSchedule` versioned entity | ✅ | name, description, dataset_key, model_key, prompt_key, metric_keys, cron_expr, status (active/paused/archived), last_run_at, next_run_at |
+| `app/models/eval_job.py` — `EvalJob` immutable event | ✅ | schedule_id, status (pending/running/completed/failed), eval_id, error_msg, triggered_by, started/completed timestamps |
+| `app/models/experiment.py` — `Experiment` versioned entity | ✅ | name, description, evaluation_ids (JSON), status (active/concluded/archived), hypothesis, conclusion |
+| `app/schemas/observability.py` — all P10 schemas | ✅ | EvalScheduleCreate/StatusUpdate/Out, EvalJobOut, ExperimentCreate/Update/Out, TrendPoint/TrendOut |
+| `app/services/trend_service.py` — trend query from existing Evaluation data | ✅ | get_metric_trend(dataset_key, metric_kind): derives from aggregate_scores, no new model |
+| `app/services/experiment_service.py` — experiment CRUD | ✅ | create_experiment, update_experiment (new version), get/list; ObservabilityError defined here |
+| `app/services/schedule_service.py` — schedule CRUD + trigger | ✅ | lifecycle: active↔paused→archived; trigger runs execute_evaluation inline; job records result |
+| `app/core/scheduler.py` — APScheduler soft dependency | ✅ | importlib.util.find_spec for detection; graceful degrade if not installed; configure_scheduler/stop_scheduler wired to lifespan |
+| `app/api/observability.py` — 11 endpoints under /observe | ✅ | schedules CRUD + status + trigger + jobs; experiments CRUD; trends query |
+| Migration `h2c3d4e5f6g7` (3 tables: eval_schedules + eval_jobs + experiments + 7 indexes) | ✅ | alembic check clean |
+| `app/models/__init__.py` + `app/main.py` wired | ✅ | scheduler wired to lifespan |
+| `pyproject.toml` — scheduler optional extra added | ✅ | `[scheduler] = ["apscheduler>=3.10"]` |
+| Tests (schedule CRUD×5, trigger×4, experiments×5, trends×2, scheduler soft-dep graceful) | ✅ | **134/134 passed** · ruff ✅ · mypy --strict ✅ (109 files) · alembic clean ✅ |
+| `src/types/index.ts` — EvalSchedule, EvalJob, Experiment, TrendPoint, TrendOut types | 🟡 | |
+| `src/lib/api.ts` — createEvalSchedule, listEvalSchedules, updateScheduleStatus, triggerSchedule, listEvalJobs, createExperiment, listExperiments, updateExperiment, getMetricTrend | 🟡 | |
+| `src/pages/ObservabilityPanels.tsx` — ScheduleCreateForm, ScheduleList, SchedulePanel | 🟡 | <300 lines |
+| `src/pages/ObservabilityPage.tsx` — TrendsPanel, ExperimentsPanel, ObservabilityPage (3-tab) | 🟡 | <300 lines; /observe route |
+| `src/app/Layout.tsx` + `App.tsx` — Observability nav + /observe route | 🟡 | |
+| Exit criteria: schedule created, triggered, job recorded; experiment created; trend queried | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
+
+## Phase 11 ⬜ Not started
+See [progress.md](./progress.md). STOP for review before starting Phase 11.

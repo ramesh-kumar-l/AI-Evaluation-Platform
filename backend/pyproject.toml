@@ -21,6 +21,9 @@ otel = [
     "opentelemetry-exporter-otlp-proto-http>=1.29",
     "opentelemetry-instrumentation-fastapi>=0.50b0",
 ]
+scheduler = [
+    "apscheduler>=3.10",
+]
 dev = [
     "pytest>=9.0.3",
     "ruff>=0.15.15",

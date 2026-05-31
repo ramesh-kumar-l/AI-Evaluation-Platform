@@ -8,6 +8,7 @@ const NAV_ITEMS: Array<{ to: string; label: string; end?: boolean }> = [
   { to: "/benchmarks", label: "Benchmarks" },
   { to: "/rag", label: "RAG Eval" },
   { to: "/agent", label: "Agent Eval" },
+  { to: "/observe", label: "Observability" },
   { to: "/datasets", label: "Datasets" },
   { to: "/audit", label: "Audit Trail" },
 ];
