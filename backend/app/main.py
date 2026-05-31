@@ -8,7 +8,17 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app import __version__
-from app.api import audit, datasets, evaluations, health, metrics, prompts, providers, runs
+from app.api import (
+    audit,
+    comparisons,
+    datasets,
+    evaluations,
+    health,
+    metrics,
+    prompts,
+    providers,
+    runs,
+)
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
 from app.core.telemetry import configure_telemetry
@@ -48,6 +58,7 @@ def create_app() -> FastAPI:
     app.include_router(runs.router)
     app.include_router(metrics.router)
     app.include_router(evaluations.router)
+    app.include_router(comparisons.router)
     return app
 
 

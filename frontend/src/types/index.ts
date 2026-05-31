@@ -105,3 +105,32 @@ export interface AuditEvent {
   prev_hash: string | null;
   hash: string;
 }
+
+export interface MetricDelta {
+  metric_name: string;
+  metric_kind: string;
+  baseline_score: number;
+  candidate_score: number;
+  delta: number;
+  relative_delta: number;
+  regression: boolean;
+  improvement: boolean;
+  threshold: number;
+}
+
+export interface Comparison {
+  id: string;
+  name: string;
+  created_at: string;
+  created_by: string;
+  baseline_id: string;
+  candidate_id: string;
+  kind: string;
+  dataset_key: string;
+  metric_deltas: Record<string, MetricDelta>;
+  threshold_config: Record<string, number>;
+  regressions_detected: number;
+  improvements_detected: number;
+  status: "regression" | "improvement" | "neutral";
+  notes: string | null;
+}

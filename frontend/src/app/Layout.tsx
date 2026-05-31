@@ -3,6 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 const NAV_ITEMS: Array<{ to: string; label: string; end?: boolean }> = [
   { to: "/", label: "Dashboard", end: true },
   { to: "/evaluations", label: "Evaluations" },
+  { to: "/compare", label: "Compare" },
   { to: "/datasets", label: "Datasets" },
   { to: "/audit", label: "Audit Trail" },
 ];

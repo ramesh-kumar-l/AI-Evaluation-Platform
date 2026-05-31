@@ -95,5 +95,23 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 
 **Note:** 🟡 = authored, not live-tested locally (R6: no Node.js toolchain in dev environment). CI will verify `tsc --noEmit` + `vite build`.
 
-## Phases 5–11 ⬜ Not started
-See [progress.md](./progress.md). **STOP for review before starting Phase 5.**
+## Phase 5 — Comparison & Regression Detection ✅ (backend) / 🟡 (frontend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `app/models/comparison.py` — `Comparison` immutable event model | ✅ | baseline_id, candidate_id, metric_deltas, regressions_detected, improvements_detected, status |
+| `app/schemas/comparison.py` — `ComparisonCreate`, `ComparisonOut`, `MetricDeltaOut` | ✅ | kind validator, threshold_config |
+| `app/services/comparison_service.py` — delta computation + regression detection | ✅ | DEFAULT_THRESHOLD=0.02; per-metric threshold override; audit event on create |
+| `app/api/comparisons.py` — `POST/GET /comparisons`, `GET /comparisons/{id}` | ✅ | filters: baseline_id, candidate_id, dataset_key, status |
+| Migration `c5d6e7f8a9b0` (comparisons table + 3 indexes) | ✅ | `alembic check` clean |
+| `app/models/__init__.py` + `app/main.py` wired | ✅ | |
+| Tests (neutral, regression, improvement, custom threshold, audit, mismatch 422, 404s, list, filter) | ✅ | **45/45 passed** · ruff ✅ · mypy --strict ✅ · alembic clean ✅ |
+| `src/types/index.ts` — `MetricDelta`, `Comparison` types | 🟡 | |
+| `src/lib/api.ts` — createComparison, listComparisons, getComparison | 🟡 | |
+| `src/components/RegressionBadge.tsx` — regression/improvement/neutral badge | 🟡 | |
+| `src/components/ComparisonGrid.tsx` — metric delta table with pp badges | 🟡 | |
+| `src/pages/ComparePage.tsx` — form + history + detail | 🟡 | select baseline/candidate, run comparison, view deltas |
+| `src/app/Layout.tsx` + `App.tsx` — Compare nav + /compare route | 🟡 | |
+| Exit criteria: regression detected, shown with evidence, recorded | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
+
+## Phases 6–11 ⬜ Not started
+See [progress.md](./progress.md). **STOP for review before starting Phase 6.**

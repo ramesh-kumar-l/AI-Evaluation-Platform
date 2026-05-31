@@ -6,6 +6,7 @@ Importing this package registers all models on ``Base.metadata`` so Alembic auto
 
 from app.models.audit_event import AuditEvent
 from app.models.base import Base
+from app.models.comparison import Comparison
 from app.models.dataset import Dataset
 from app.models.evaluation import Evaluation
 from app.models.evaluation_result import EvaluationResult
@@ -17,6 +18,7 @@ from app.models.run import InferenceRun
 __all__ = [
     "AuditEvent",
     "Base",
+    "Comparison",
     "Dataset",
     "Evaluation",
     "EvaluationResult",

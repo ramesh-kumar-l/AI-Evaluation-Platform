@@ -8,7 +8,8 @@ _Last updated: 2026-05-31_
 - **Phase 2 — Provider Abstraction & Offline Execution: COMPLETE & verified (backend).**
 - **Phase 3 — Evaluation Engine + Metrics: COMPLETE & verified (backend).**
 - **Phase 4 — Trust-First Result UI: AUTHORED (frontend) — not live-tested (R6: no Node toolchain locally); CI-gated.**
-- Next up: **Phase 5 — Comparison & Regression Detection** (STOP for review first, per protocol).
+- **Phase 5 — Comparison & Regression Detection: COMPLETE (backend ✅ verified) / AUTHORED (frontend 🟡 CI-gated).**
+- Next up: **Phase 6 — Release Gates & Approvals → MVP** (STOP for review first, per protocol).
 
 ## What works right now
 - Backend boots fully offline (SQLite fallback, no infra) — `uvicorn app.main:app`.
@@ -44,10 +45,12 @@ uv pip install -e ".[dev]"
 - Audit `record_event` normalises payloads via `json.loads(json.dumps(..., default=str))`.
 
 ## Open threads / next-phase notes
-- **Frontend (P4) authored, not live-tested** — CI (`npm install && tsc --noEmit && vite build`) is
-  the verification gate. Risk R6 (no Node/Rust toolchain in dev environment).
+- **Frontend (P4+P5) authored, not live-tested** — CI (`npm install && tsc --noEmit && vite build`)
+  is the verification gate. Risk R6 (no Node/Rust toolchain in dev environment).
 - **docker-compose** authored but not run here.
-- Phase 5 needs: Comparison engine (model-vs-model, prompt-vs-prompt), regression detection +
-  thresholds, ComparisonGrid/ResultDiffViewer/RegressionViewer components.
+- Phase 6 needs: `ReleaseGate` entity (VersionedBase), threshold criteria, `Approval` workflow,
+  `POST /gates`, `POST /gates/{id}/evaluate`, `POST /gates/{id}/approve`, ReleaseGateCard +
+  ApprovalPanel frontend components.
+- Migrations so far: a40763e31c9b → b3556b7705c3 → a8a557afd538 → c5d6e7f8a9b0.
 - Concurrency note: audit hash chain uses last-seq lookup; fine for single-writer/offline.
   Revisit for concurrent writers before multi-user (Phase 11).
