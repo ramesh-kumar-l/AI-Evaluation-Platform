@@ -4,44 +4,77 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
   backend:
+    name: Backend (ruff · mypy · alembic · pytest)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+
       - name: Install uv
         uses: astral-sh/setup-uv@v4
-      - name: Set up Python
+
+      - name: Set up Python 3.12
         run: uv python install 3.12
+
       - name: Create virtual environment
         run: uv venv
-      - name: Install dependencies
+
+      - name: Install dependencies (runtime + dev + otel)
         run: uv pip install -e ".[dev,otel]"
-      - name: Lint (ruff)
-        run: ruff check .
-      - name: Format check (ruff)
-        run: ruff format --check .
-      - name: Type check (mypy)
-        run: mypy app
-      - name: Test (pytest)
-        run: pytest
+
+      - name: Lint (ruff check)
+        run: .venv/bin/ruff check .
+
+      - name: Format check (ruff format)
+        run: .venv/bin/ruff format --check .
+
+      - name: Type check (mypy --strict)
+        run: .venv/bin/python -m mypy app
+
+      - name: Run migrations (SQLite fallback)
+        run: .venv/bin/python -m alembic upgrade head
+        env:
+          AEP_DATABASE_URL: ""
+          AEP_ENV: test
+
+      - name: Schema drift check (alembic check)
+        run: .venv/bin/python -m alembic check
+        env:
+          AEP_DATABASE_URL: ""
+          AEP_ENV: test
+
+      - name: Run tests (150 tests, SQLite)
+        run: .venv/bin/python -m pytest -q
+        env:
+          AEP_DATABASE_URL: ""
+          AEP_ENV: test
 
   frontend:
+    name: Frontend (tsc · vite build)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - name: Type check
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check
         run: npm run lint
-      - name: Build
+
+      - name: Vite production build
         run: npm run build

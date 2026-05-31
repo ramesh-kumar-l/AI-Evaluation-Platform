@@ -1,12 +1,26 @@
-# Production/runtime dependencies for the FastAPI backend.
-# Keep these aligned with [project].dependencies in backend/pyproject.toml.
+# ============================================================
+# AEP Backend — Runtime Dependencies (production)
+# Kept in sync with [project].dependencies in pyproject.toml.
+# Install: uv pip install -r requirements.txt
+# Dev tools: see requirements-dev.txt
+# Optional extras: see requirements-extras.txt
+# ============================================================
 
-fastapi>=0.136.3
-uvicorn[standard]>=0.48
-pydantic>=2.13.4
-pydantic-settings>=2.14.1
-sqlalchemy>=2.0.50
-alembic>=1.18.4
-psycopg[binary]>=3.3.4
-structlog>=25.5
-httpx>=0.28.1
+# --- Web framework ---
+fastapi>=0.136.3             # ASGI framework; router-level Depends() for auth/RBAC
+uvicorn[standard]>=0.48      # ASGI server; [standard] adds watchfiles + websockets
+
+# --- Validation & settings ---
+pydantic>=2.13.4             # Schema validation (v2 API); used for all request/response DTOs
+pydantic-settings>=2.14.1    # 12-factor config: typed env vars + .env file support
+
+# --- Database ---
+sqlalchemy>=2.0.50           # ORM; mapped_column/Mapped[] type-safe 2.x API
+alembic>=1.18.4              # Schema migrations; alembic check runs in CI
+psycopg[binary]>=3.3.4       # PostgreSQL 3rd-gen driver (psycopg3); binary = no compile
+
+# --- HTTP client ---
+httpx>=0.28.1                # Async HTTP; used by OllamaAdapter for LLM provider calls
+
+# --- Logging ---
+structlog>=25.5              # Structured JSON logging with configurable processor chain

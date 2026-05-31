@@ -26,6 +26,16 @@ nav:
   - Architecture: architecture.md
   - API Reference: api.md
   - Deployment: deployment.md
+  - Onboarding: NewbieQuickStarterGuide.md
+  - Dependencies: dependency-rationale.md
+  - Repo Health: REPO_HEALTH_REVIEW.md
+  - Missing Artifacts: MISSING_ARTIFACTS_CHECKLIST.md
+  - Blog:
+    - Why AI Needs CI/CD for Trust: blog/01-ai-systems-need-cicd-for-trust.md
+    - Building AEP from First Principles: blog/02-building-ai-eval-platform-from-first-principles.md
+    - Engineering Trust for AI Releases: blog/03-engineering-trust-release-assurance-for-ai.md
+    - Offline-First AI Infrastructure: blog/04-offline-first-ai-infrastructure.md
+    - Architecture Decisions Deep Dive: blog/05-architecture-decisions-production-ai-eval-platform.md
 
 plugins:
   - search

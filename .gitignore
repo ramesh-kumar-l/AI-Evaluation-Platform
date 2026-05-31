@@ -21,3 +21,4 @@ frontend/src-tauri/target/
 Thumbs.db
 .idea/
 .vscode/
+docs/*
