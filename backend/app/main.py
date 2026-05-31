@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app import __version__
-from app.api import health
+from app.api import audit, datasets, health, prompts, providers
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
 from app.core.telemetry import configure_telemetry
@@ -41,6 +41,10 @@ def create_app() -> FastAPI:
     )
     configure_telemetry(app, settings)
     app.include_router(health.router)
+    app.include_router(providers.router)
+    app.include_router(prompts.router)
+    app.include_router(datasets.router)
+    app.include_router(audit.router)
     return app
 
 

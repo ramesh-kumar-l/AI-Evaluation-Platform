@@ -7,7 +7,8 @@ row's hash, so any tampering breaks the chain and is detectable.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy import JSON, DateTime, Integer, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
@@ -16,7 +17,7 @@ from app.models.base import Base
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class AuditEvent(Base):
@@ -35,7 +36,7 @@ class AuditEvent(Base):
     entity_key: Mapped[uuid.UUID] = mapped_column(Uuid(), nullable=False, index=True)
     entity_version_id: Mapped[uuid.UUID | None] = mapped_column(Uuid(), nullable=True)
 
-    payload: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
 
     # Tamper-evidence chain.
     prev_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)

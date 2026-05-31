@@ -28,7 +28,9 @@ def _hash(prev_hash: str | None, content: dict[str, Any]) -> str:
 
 
 def _latest(db: Session) -> AuditEvent | None:
-    return db.execute(select(AuditEvent).order_by(AuditEvent.seq.desc()).limit(1)).scalar_one_or_none()
+    return db.execute(
+        select(AuditEvent).order_by(AuditEvent.seq.desc()).limit(1)
+    ).scalar_one_or_none()
 
 
 def record_event(

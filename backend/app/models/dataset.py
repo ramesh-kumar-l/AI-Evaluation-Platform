@@ -6,17 +6,18 @@ rows, ground-truth policy) arrives in Phase 7. Each item is ``{"input": ..., "ex
 
 from __future__ import annotations
 
+from typing import Any
+
 from sqlalchemy import JSON, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.models.base import Base
-from app.models.mixins import VersionedMixin
+from app.models.mixins import VersionedBase
 
 
-class Dataset(VersionedMixin, Base):
+class Dataset(VersionedBase):
     __tablename__ = "datasets"
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(String(1024), nullable=False, default="")
-    items: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    items: Mapped[list[Any]] = mapped_column(JSON, nullable=False, default=list)
     item_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

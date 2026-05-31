@@ -8,14 +8,16 @@ with an incremented ``version``, a ``parent_id`` lineage pointer to its predeces
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, DateTime, Integer, String, Uuid, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Integer, String, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, declared_attr, mapped_column
+
+from app.models.base import Base
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class VersionedMixin:
@@ -43,3 +45,15 @@ class VersionedMixin:
     @declared_attr.directive
     def __table_args__(cls) -> tuple[object, ...]:  # noqa: N805
         return (UniqueConstraint("entity_key", "version", name="version_per_entity"),)
+
+
+class VersionedBase(VersionedMixin, Base):
+    """Abstract mapped base for all versioned entities.
+
+    Concrete entities subclass this (not the mixin directly) so the generic versioning service has a
+    single, fully typed base to operate on.
+    """
+
+    __abstract__ = True
+    # Set by each concrete subclass; declared here for the type checker.
+    __tablename__: str
