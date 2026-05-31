@@ -229,5 +229,26 @@ All will reuse `VersionedBase` + the audit service — no retrofit needed.
 | `src/app/Layout.tsx` + `App.tsx` — Observability nav + /observe route | 🟡 | |
 | Exit criteria: schedule created, triggered, job recorded; experiment created; trend queried | ✅ (backend) 🟡 (UI) | backend 100% verified; UI CI-gated (R6) |
 
-## Phase 11 ⬜ Not started
-See [progress.md](./progress.md). STOP for review before starting Phase 11.
+## Phase 11 — Governance, Security, Accessibility, Docs & Deployment Hardening ✅ (backend) / 🟡 (frontend)
+| Item | Status | Notes |
+|------|--------|-------|
+| `app/models/api_key.py` — `ApiKey` immutable record | ✅ | id, name, key_hash (sha256, unique), role, created_at, revoked_at; is_active property |
+| `app/schemas/auth.py` — auth schemas | ✅ | ApiKeyCreate, ApiKeyCreatedOut (raw_key shown once), ApiKeyOut (last4 hash only) |
+| `app/services/auth_service.py` — key lifecycle | ✅ | create_key, get_key_by_raw (sha256 lookup), revoke_key, list_keys |
+| `app/core/auth.py` — FastAPI dependency | ✅ | get_current_key: returns ApiKey or None (when disabled); 401 missing, 403 invalid/revoked |
+| `app/core/rbac.py` — role hierarchy | ✅ | viewer(0) < evaluator(1) < approver(2) < admin(3); require_role(min) factory |
+| `app/core/rate_limit.py` — sliding-window middleware | ✅ | in-process deque per key/IP; 429 with Retry-After; bypassed on health/ready |
+| `app/core/security_headers.py` — security headers middleware | ✅ | X-Content-Type-Options, X-Frame-Options, Referrer-Policy, X-XSS-Protection, Permissions-Policy |
+| `app/api/admin.py` — key management endpoints | ✅ | POST/GET/DELETE /admin/api-keys; protected by X-Admin-Secret header |
+| `app/core/config.py` — added api_auth_enabled, admin_secret, rate_limit_per_minute | ✅ | auth disabled by default (offline-first); enable in production |
+| `app/api/deps.py` — updated get_actor | ✅ | actor from API key name when auth enabled; X-Actor fallback when disabled |
+| `app/main.py` — middlewares + auth wired | ✅ | RateLimitMiddleware + SecurityHeadersMiddleware; Depends(get_current_key) on all routers except health |
+| Migration `i3d4e5f6g7h8` (api_keys table, 3 constraints, 1 index) | ✅ | alembic check clean |
+| Tests (create key, list, revoke, 404 revoke, 401 missing, 403 invalid, valid access, revoked 403, viewer read, RBAC hierarchy, RBAC rejects, evaluator write, admin secret required, wrong secret, security headers, rate limit 429) | ✅ | **150/150 passed** · ruff ✅ · mypy --strict ✅ (117 files) · alembic clean ✅ |
+| `infra/k8s/` — 7 Kubernetes manifests | 🟡 | namespace, configmap, secret (template), deployment (non-root, read-only fs, resource limits), service, ingress, hpa |
+| `infra/docker-compose.prod.yml` — hardened production compose | 🟡 | non-root user, read-only fs, resource limits, internal+external networks |
+| `backend/Dockerfile` — multi-stage build | 🟡 | builder stage + production stage (non-root, minimal image, 2 workers) |
+| `mkdocs.yml` + `docs/` — MkDocs documentation | 🟡 | index, architecture (domain model + migration chain), api reference, deployment guide |
+| `frontend/src/components/SkipToContent.tsx` — skip nav | 🟡 | keyboard-accessible, sr-only until focused, WCAG AA |
+| `frontend/src/app/Layout.tsx` — ARIA landmarks | 🟡 | role=navigation, role=main, id=main-content, aria-label on aside; skip link wired |
+| Exit criteria: auth enforced, security headers present, rate limiting active, K8s deployable, docs authored | ✅ (backend) 🟡 (infra/docs/UI) | backend 100% verified; infra/docs authored |

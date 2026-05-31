@@ -5,10 +5,11 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
 from app import __version__
 from app.api import (
+    admin,
     agent,
     audit,
     benchmarks,
@@ -24,9 +25,12 @@ from app.api import (
     rag,
     runs,
 )
+from app.core.auth import get_current_key
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
+from app.core.rate_limit import RateLimitMiddleware
 from app.core.scheduler import configure_scheduler, stop_scheduler
+from app.core.security_headers import SecurityHeadersMiddleware
 from app.core.telemetry import configure_telemetry
 
 
@@ -58,20 +62,24 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
     configure_telemetry(app, settings)
-    app.include_router(health.router)
-    app.include_router(providers.router)
-    app.include_router(prompts.router)
-    app.include_router(datasets.router)
-    app.include_router(audit.router)
-    app.include_router(runs.router)
-    app.include_router(metrics.router)
-    app.include_router(evaluations.router)
-    app.include_router(comparisons.router)
-    app.include_router(gates.router)
-    app.include_router(benchmarks.router)
-    app.include_router(rag.router)
-    app.include_router(agent.router)
-    app.include_router(observability.router)
+    app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
+    _auth = [Depends(get_current_key)]
+    app.include_router(health.router)  # health/ready never require auth
+    app.include_router(providers.router, dependencies=_auth)
+    app.include_router(prompts.router, dependencies=_auth)
+    app.include_router(datasets.router, dependencies=_auth)
+    app.include_router(audit.router, dependencies=_auth)
+    app.include_router(runs.router, dependencies=_auth)
+    app.include_router(metrics.router, dependencies=_auth)
+    app.include_router(evaluations.router, dependencies=_auth)
+    app.include_router(comparisons.router, dependencies=_auth)
+    app.include_router(gates.router, dependencies=_auth)
+    app.include_router(benchmarks.router, dependencies=_auth)
+    app.include_router(rag.router, dependencies=_auth)
+    app.include_router(agent.router, dependencies=_auth)
+    app.include_router(observability.router, dependencies=_auth)
+    app.include_router(admin.router)  # admin uses its own secret header
     return app
 
 

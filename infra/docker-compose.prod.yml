@@ -1,0 +1,72 @@
+# Production-hardened docker-compose. Requires a .env.prod file at repo root.
+# Usage: docker compose -f infra/docker-compose.prod.yml --env-file .env.prod up -d
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${AEP_DB_USER}
+      POSTGRES_PASSWORD: ${AEP_DB_PASSWORD}
+      POSTGRES_DB: aep
+    volumes:
+      - aep_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AEP_DB_USER} -d aep"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+    networks:
+      - internal
+
+  api:
+    build:
+      context: ../backend
+      target: production
+    restart: unless-stopped
+    environment:
+      AEP_ENV: production
+      AEP_DATABASE_URL: postgresql+psycopg://${AEP_DB_USER}:${AEP_DB_PASSWORD}@db:5432/aep
+      AEP_LOG_JSON: "true"
+      AEP_API_AUTH_ENABLED: "true"
+      AEP_ADMIN_SECRET: ${AEP_ADMIN_SECRET}
+      AEP_RATE_LIMIT_PER_MINUTE: "1000"
+      AEP_OLLAMA_BASE_URL: ${AEP_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/var
+    user: "1000:1000"
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1G"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - internal
+      - external
+
+networks:
+  internal:
+    driver: bridge
+    internal: true
+  external:
+    driver: bridge
+
+volumes:
+  aep_pgdata:

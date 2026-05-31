@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     enable_cloud_providers: bool = False
 
+    # Security — disabled by default for local/offline dev; enable in production.
+    api_auth_enabled: bool = False
+    admin_secret: str = ""
+    rate_limit_per_minute: int = 1000
+
     # Telemetry is opt-in; populated from the standard OTel env var if present.
     otel_exporter_otlp_endpoint: str = Field(default="", alias="OTEL_EXPORTER_OTLP_ENDPOINT")
 

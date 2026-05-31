@@ -8,6 +8,7 @@ from app.models.agent_eval import AgentEval
 from app.models.agent_eval_result import AgentEvalResult
 from app.models.agent_run import AgentRun
 from app.models.agent_step import AgentStep
+from app.models.api_key import ApiKey
 from app.models.approval import Approval
 from app.models.audit_event import AuditEvent
 from app.models.base import Base
@@ -33,6 +34,7 @@ from app.models.run import InferenceRun
 
 __all__ = [
     "AgentEval",
+    "ApiKey",
     "EvalJob",
     "EvalSchedule",
     "Experiment",
